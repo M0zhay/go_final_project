@@ -43,7 +43,7 @@ func TestDB(t *testing.T) {
 
 	today := time.Now().Format(`20060102`)
 
-	res, err := db.Exec(`INSERT INTO scheduler (date, title, comment, repeat) 
+	res, err := db.Exec(`INSERT INTO scheduler (date, title, comment, repeat)
 	VALUES (?, 'Todo', 'Комментарий', '')`, today)
 	assert.NoError(t, err)
 
