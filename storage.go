@@ -15,6 +15,8 @@ func NewStore(db *sql.DB) Store {
 	return Store{db: db}
 }
 
+const limitTask = 50
+
 func (s Store) Add(task Task) (int, error) {
 	query := "INSERT INTO scheduler (date, title, comment, repeat) VALUES (?, ?, ?, ?)"
 	res, err := s.db.Exec(query, task.Date, task.Title, task.Comment, task.Repeat)
@@ -31,11 +33,11 @@ func (s Store) Add(task Task) (int, error) {
 }
 
 func (s Store) GetAll() ([]Task, error) {
-	return s.queryTasks("SELECT id, date, title, comment, repeat FROM scheduler ORDER BY date LIMIT 50")
+	return s.queryTasks("SELECT id, date, title, comment, repeat FROM scheduler ORDER BY date LIMIT ?", limitTask)
 }
 
 func (s Store) GetByDate(date time.Time) ([]Task, error) {
-	return s.queryTasks("SELECT id, date, title, comment, repeat FROM scheduler WHERE date = ? LIMIT 50", date.Format(DATE_FORMAT))
+	return s.queryTasks("SELECT id, date, title, comment, repeat FROM scheduler WHERE date = ? LIMIT ?", date.Format(DATE_FORMAT), limitTask)
 }
 
 func (s Store) GetById(id int) (Task, error) {
@@ -45,7 +47,7 @@ func (s Store) GetById(id int) (Task, error) {
 
 func (s Store) GetByTitle(search string) ([]Task, error) {
 	searchPattern := fmt.Sprintf("%%%s%%", strings.ToUpper(search))
-	return s.queryTasks("SELECT id, date, title, comment, repeat FROM scheduler WHERE UPPER(title) LIKE ? OR UPPER(comment) LIKE ? ORDER BY date LIMIT 50", searchPattern, searchPattern)
+	return s.queryTasks("SELECT id, date, title, comment, repeat FROM scheduler WHERE title LIKE ? OR UPPER(comment) LIKE ? ORDER BY date LIMIT ?", searchPattern, searchPattern, limitTask)
 }
 
 func (s Store) Update(task Task) error {

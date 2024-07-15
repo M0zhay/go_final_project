@@ -49,10 +49,10 @@ func installDb(db *sql.DB) error {
 	createTableSQL := `
 	CREATE TABLE scheduler (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		date TEXT NOT NULL,
-		title TEXT NOT NULL,
+		date CHAR(8) NOT NULL,
+		title CHAR(128) NOT NULL,
 		comment TEXT,
-		repeat TEXT
+		repeat CHAR(128)
 	);
 	CREATE INDEX idx_date ON scheduler(date);
 	`
